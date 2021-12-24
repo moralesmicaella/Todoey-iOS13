@@ -10,11 +10,16 @@ import UIKit
 
 class ToDoListTableViewController: UITableViewController {
     
+    let defaults = UserDefaults.standard
+    
     var toDoItems = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        if let items = defaults.array(forKey: K.toDoItemsKey) as? [String] {
+            toDoItems = items
+        }
     }
 
     // MARK: - Table view data source
@@ -54,6 +59,8 @@ class ToDoListTableViewController: UITableViewController {
             print("Success")
             if let item = textField.text, !item.isEmpty {
                 self.toDoItems.append(item)
+                
+                self.defaults.set(self.toDoItems, forKey: K.toDoItemsKey)
                 self.tableView.reloadData()
             }
         }
