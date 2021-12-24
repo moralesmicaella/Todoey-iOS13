@@ -10,5 +10,5 @@ import Foundation
 
 struct K {
     static let cellIdentifier = "ToDoItemCell"
-    static let toDoItemsKey = "ToDoItems"
+    static let itemsFilename = "Items.plist"
 }
