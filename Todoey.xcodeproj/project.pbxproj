@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		248953B42775A862006981CC /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248953B32775A862006981CC /* Item.swift */; };
 		24A379B82775367600E0816D /* ToDoListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A379B72775367600E0816D /* ToDoListTableViewController.swift */; };
 		24A379BA27756A6C00E0816D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A379B927756A6C00E0816D /* Constants.swift */; };
 		EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2BE4F9239524DB00FB933B /* AppDelegate.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		248953B32775A862006981CC /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		24A379B72775367600E0816D /* ToDoListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListTableViewController.swift; sourceTree = "<group>"; };
 		24A379B927756A6C00E0816D /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		EB2BE4F6239524DB00FB933B /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,6 +39,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		248953B22775A83C006981CC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				248953B32775A862006981CC /* Item.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		24A379BB27756A9E00E0816D /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -72,8 +82,9 @@
 		EB2BE4F8239524DB00FB933B /* Todoey */ = {
 			isa = PBXGroup;
 			children = (
-				24A379B927756A6C00E0816D /* Constants.swift */,
 				EB2BE4F9239524DB00FB933B /* AppDelegate.swift */,
+				24A379B927756A6C00E0816D /* Constants.swift */,
+				248953B22775A83C006981CC /* Models */,
 				24A379BC27756AA600E0816D /* Views */,
 				24A379BB27756A9E00E0816D /* Controllers */,
 				EB2BE502239524DC00FB933B /* Assets.xcassets */,
@@ -156,6 +167,7 @@
 			files = (
 				EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */,
 				24A379B82775367600E0816D /* ToDoListTableViewController.swift in Sources */,
+				248953B42775A862006981CC /* Item.swift in Sources */,
 				24A379BA27756A6C00E0816D /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

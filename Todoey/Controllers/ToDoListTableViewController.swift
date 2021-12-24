@@ -12,12 +12,12 @@ class ToDoListTableViewController: UITableViewController {
     
     let defaults = UserDefaults.standard
     
-    var toDoItems = [String]()
+    var toDoItems = [Item]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let items = defaults.array(forKey: K.toDoItemsKey) as? [String] {
+        if let items = defaults.array(forKey: K.toDoItemsKey) as? [Item] {
             toDoItems = items
         }
     }
@@ -30,8 +30,11 @@ class ToDoListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: K.cellIdentifier, for: indexPath)
-        cell.textLabel?.text = toDoItems[indexPath.row]
         
+        let item = toDoItems[indexPath.row]
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none
 
         return cell
     }
@@ -39,14 +42,9 @@ class ToDoListTableViewController: UITableViewController {
     //MARK: - Table view delegate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
-        
-        if cell?.accessoryType == .checkmark {
-            cell?.accessoryType = .none
-        } else {
-            cell?.accessoryType = .checkmark
-        }
+        toDoItems[indexPath.row].done = !toDoItems[indexPath.row].done
 
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
@@ -57,9 +55,10 @@ class ToDoListTableViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add Item", style: .default) { (action) in
             print("Success")
-            if let item = textField.text, !item.isEmpty {
-                self.toDoItems.append(item)
-                
+            if let itemTitle = textField.text, !itemTitle.isEmpty {
+                let newItem = Item(title: itemTitle)
+                self.toDoItems.append(newItem)
+
                 self.defaults.set(self.toDoItems, forKey: K.toDoItemsKey)
                 self.tableView.reloadData()
             }
