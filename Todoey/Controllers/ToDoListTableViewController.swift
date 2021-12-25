@@ -13,6 +13,12 @@ class ToDoListTableViewController: UITableViewController {
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    var category: Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     var toDoItems = [Item]()
     var filteredToDoItems = [Item]()
     
@@ -22,8 +28,6 @@ class ToDoListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadItems()
-        filteredToDoItems = toDoItems
     }
 
     // MARK: - Table view data source
@@ -49,8 +53,8 @@ class ToDoListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         filteredToDoItems[indexPath.row].done = !filteredToDoItems[indexPath.row].done
         
-        //    context.delete(toDoItems[indexPath.row])
-        //    toDoItems.remove(at: indexPath.row)
+//        context.delete(toDoItems[indexPath.row])
+//        toDoItems.remove(at: indexPath.row)
         
         self.saveItems()
         
@@ -68,6 +72,7 @@ class ToDoListTableViewController: UITableViewController {
                 let newItem = Item(context: self.context)
                 newItem.title = itemTitle
                 newItem.done = false
+                newItem.parentCategory = self.category
                 self.toDoItems.append(newItem)
                 
                 self.saveItems()
@@ -88,6 +93,7 @@ class ToDoListTableViewController: UITableViewController {
     func saveItems() {
         do {
             try context.save()
+            filteredToDoItems = toDoItems
         } catch {
             print("Error saving context \(error)")
         }
@@ -97,8 +103,11 @@ class ToDoListTableViewController: UITableViewController {
     
     func loadItems() {
         let request: NSFetchRequest<Item> = Item.fetchRequest()
+        let predicate = NSPredicate(format: "parentCategory.name MATCHES %@", category!.name!)
+        request.predicate = predicate
         do {
             toDoItems = try context.fetch(request)
+            filteredToDoItems = toDoItems
         } catch {
             print("Error fetching data from context \(error)")
         }
@@ -117,7 +126,6 @@ extension ToDoListTableViewController: UISearchBarDelegate {
                 return item.title?.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
             })
         }
-        
         
         tableView.reloadData()
     }
