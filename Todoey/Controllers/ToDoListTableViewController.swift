@@ -111,7 +111,7 @@ class ToDoListTableViewController: UITableViewController {
 extension ToDoListTableViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
-            filteredToDoItems = []
+            filteredToDoItems = toDoItems
         } else {
             filteredToDoItems = toDoItems.filter({ (item) in
                 return item.title?.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
@@ -126,7 +126,6 @@ extension ToDoListTableViewController: UISearchBarDelegate {
         navigationController?.setNavigationBarHidden(true, animated: true)
         searchBar.showsCancelButton = true
         
-        filteredToDoItems = []
         tableView.reloadData()
     }
     
