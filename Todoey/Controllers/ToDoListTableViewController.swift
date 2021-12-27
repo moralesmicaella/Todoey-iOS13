@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class ToDoListTableViewController: UITableViewController {
+class ToDoListTableViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
@@ -36,7 +36,7 @@ class ToDoListTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.toDoCellIdentifier, for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = toDoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
@@ -113,6 +113,18 @@ class ToDoListTableViewController: UITableViewController {
         }
         
         tableView.reloadData()
+    }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let item = toDoItems?[indexPath.row] {
+            do {
+                try realm.write({
+                    realm.delete(item)
+                })
+            } catch {
+                print("Error deleting item \(error)")
+            }
+        }
     }
 
 }
