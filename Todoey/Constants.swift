@@ -14,4 +14,5 @@ struct K {
     
     static let goToItemsSegue = "goToItems"
     
+    static let trashImage = "trash.fill"
 }
