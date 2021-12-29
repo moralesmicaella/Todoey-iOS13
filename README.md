@@ -17,3 +17,8 @@ A todolist app to keep track of all your tasks.
 
 ![End Banner](https://github.com/londonappbrewery/Images/blob/master/readme-end-banner.png)
 
+## Video Walkthrough
+
+Here's a walkthrough of the completed version of the tutorial
+
+![](todoey.gif)
