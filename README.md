@@ -21,4 +21,4 @@ A todolist app to keep track of all your tasks.
 
 Here's a walkthrough of the completed version of the tutorial
 
-![](todoey.gif)
+<img src="todoey.gif" width="300" height="600"/>
