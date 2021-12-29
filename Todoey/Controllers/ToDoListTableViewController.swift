@@ -10,24 +10,47 @@ import UIKit
 import RealmSwift
 
 class ToDoListTableViewController: SwipeTableViewController {
-    
+   
     let realm = try! Realm()
     
-    var color: UIColor?
+    var categoryColor: UIColor?
     var category: Category? {
         didSet {
             loadItems()
-            color = UIColor(hex: category!.color)
+            categoryColor = UIColor(hex: category!.color)
         }
     }
     
     var toDoItems: Results<Item>?
     
-    let blur = UIBlurEffect(style: .extraLight)
-    let blurView = UIVisualEffectView(effect: nil)
-
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation Controller does not exist") }
+        
+        if let category = category {
+            title = category.name
+            
+            navBar.standardAppearance.backgroundColor = categoryColor
+            navBar.standardAppearance.titleTextAttributes = [.foregroundColor: (categoryColor!.isDark ? UIColor.white : UIColor.black)]
+            navBar.standardAppearance.largeTitleTextAttributes = [.foregroundColor: (categoryColor!.isDark ? UIColor.white : UIColor.black)]
+            navBar.scrollEdgeAppearance? = navBar.standardAppearance
+            navBar.tintColor = categoryColor!.isDark ? .white : .black
+            
+            navigationItem.searchController = UISearchController()
+            navigationItem.hidesSearchBarWhenScrolling = false
+
+            if let searchBar = navigationItem.searchController?.searchBar {
+                searchBar.delegate = self
+                searchBar.searchTextField.layer.cornerRadius = 10
+                searchBar.searchTextField.layer.backgroundColor = UIColor.white.cgColor
+                searchBar.tintColor = categoryColor!.isDark ? .white : .black
+            }
+        }
         
     }
 
@@ -41,7 +64,7 @@ class ToDoListTableViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = toDoItems?[indexPath.row] {
-            let bgColor = color!.darken(by: CGFloat(indexPath.row)/CGFloat(toDoItems!.count))
+            let bgColor = categoryColor!.darken(by: CGFloat(indexPath.row)/CGFloat(toDoItems!.count))
             cell.backgroundColor = bgColor
             cell.textLabel?.text = item.title
             cell.textLabel?.textColor = bgColor.isDark ? .white : .black
@@ -81,6 +104,11 @@ class ToDoListTableViewController: SwipeTableViewController {
                 newItem.done = false
                 
                 self.save(item: newItem)
+                
+                if let toDoItems = self.toDoItems {
+                    let indexPath = IndexPath(row: toDoItems.count - 1, section: 0)
+                    self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                }
             }
         }
         
@@ -145,14 +173,12 @@ extension ToDoListTableViewController: UISearchBarDelegate {
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        navigationController?.setNavigationBarHidden(true, animated: true)
         searchBar.showsCancelButton = true
         
         tableView.reloadData()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        navigationController?.setNavigationBarHidden(false, animated: true)
         searchBar.text = ""
         searchBar.showsCancelButton = false
         searchBar.resignFirstResponder()

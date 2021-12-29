@@ -19,8 +19,14 @@ class CategoryTableViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(Realm.Configuration.defaultConfiguration.fileURL!)
         loadCategories()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation Controller does not exist") }
+        
+        navBar.standardAppearance.backgroundColor = UIColor(hex: "#1d9bf6ff")
+        navBar.scrollEdgeAppearance = navBar.standardAppearance
     }
     
     // MARK: - Table view data source
@@ -64,6 +70,11 @@ class CategoryTableViewController: SwipeTableViewController {
                 newCategory.color = UIColor.random.hexString
                 
                 self.save(category: newCategory)
+                
+                if let categories = self.categories {
+                    let indexPath = IndexPath(row: categories.count - 1, section: 0)
+                    self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                }
             }
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
