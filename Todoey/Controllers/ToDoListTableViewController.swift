@@ -96,7 +96,7 @@ class ToDoListTableViewController: SwipeTableViewController {
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
-        let addAction = UIAlertAction(title: "Add Item", style: .default) { (action) in
+        let addAction = UIAlertAction(title: "Add", style: .default) { (action) in
             print("Success")
             if let itemTitle = textField.text, !itemTitle.isEmpty {
                 let newItem = Item()
@@ -111,12 +111,14 @@ class ToDoListTableViewController: SwipeTableViewController {
                 }
             }
         }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
         }
         alert.addAction(addAction)
+        alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
     }
