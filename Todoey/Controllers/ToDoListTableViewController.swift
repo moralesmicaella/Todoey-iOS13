@@ -13,9 +13,11 @@ class ToDoListTableViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
+    var color: UIColor?
     var category: Category? {
         didSet {
             loadItems()
+            color = UIColor(hex: category!.color)
         }
     }
     
@@ -39,11 +41,12 @@ class ToDoListTableViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = toDoItems?[indexPath.row] {
+            let bgColor = color!.darken(by: CGFloat(indexPath.row)/CGFloat(toDoItems!.count))
+            cell.backgroundColor = bgColor
             cell.textLabel?.text = item.title
+            cell.textLabel?.textColor = bgColor.isDark ? .white : .black
             cell.accessoryType = item.done ? .checkmark : .none
-        } else {
-            cell.textLabel?.text = "No Items Added"
-        }
+        } 
 
         return cell
     }

@@ -19,6 +19,7 @@ class CategoryTableViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print(Realm.Configuration.defaultConfiguration.fileURL!)
         loadCategories()
     }
     
@@ -32,7 +33,12 @@ class CategoryTableViewController: SwipeTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
     
-        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Added"
+        if let category = categories?[indexPath.row] {
+            let bgColor = UIColor(hex: category.color)
+            cell.textLabel?.text = category.name
+            cell.backgroundColor = bgColor
+            cell.textLabel?.textColor = bgColor.isDark ? .white : .black
+        }
         
         return cell
     }
@@ -55,6 +61,7 @@ class CategoryTableViewController: SwipeTableViewController {
             if let categoryName = textField.text, !categoryName.isEmpty {
                 let newCategory = Category()
                 newCategory.name = categoryName
+                newCategory.color = UIColor.random.hexString
                 
                 self.save(category: newCategory)
             }
@@ -96,6 +103,7 @@ class CategoryTableViewController: SwipeTableViewController {
         if let category = categories?[indexPath.row] {
             do {
                 try realm.write {
+                    realm.delete(category.items)
                     realm.delete(category)
                 }
             } catch {
