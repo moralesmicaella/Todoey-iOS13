@@ -7,19 +7,15 @@
 //
 
 import UIKit
-import RealmSwift
 
 class CategoryTableViewController: SwipeTableViewController {
     
-    let realm = try! Realm()
-    
-    var selectedCategory: Category?
-    var categories: Results<Category>?
+    var categoryManager = CategoryManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadCategories()
+        categoryManager.loadCategories()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -31,49 +27,15 @@ class CategoryTableViewController: SwipeTableViewController {
         navBar.scrollEdgeAppearance = navBar.standardAppearance
     }
     
-    // MARK: - Table view data source
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return categories?.count ?? 1
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
-    
-        if let category = categories?[indexPath.row] {
-            let bgColor = UIColor(hex: category.color)
-            cell.textLabel?.text = category.name
-            cell.backgroundColor = bgColor
-            cell.textLabel?.textColor = bgColor.isDark ? .white : .black
-        }
-        
-        return cell
-    }
-    
-    //MARK: - Table view delegate
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        selectedCategory = categories?[indexPath.row]
-        performSegue(withIdentifier: K.goToItemsSegue, sender: self)
-    }
-    
-    //MARK: - Add new items
-    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add", style: .default) { (action) in
             if let categoryName = textField.text, !categoryName.isEmpty {
-                let newCategory = Category()
-                newCategory.name = categoryName
-                newCategory.color = UIColor.random.hexString
+                self.categoryManager.create(with: categoryName, color: UIColor.random.hexString)
+                self.tableView.reloadData()
                 
-                self.save(category: newCategory)
-                
-                if let categories = self.categories {
+                if let categories = self.categoryManager.categories {
                     let indexPath = IndexPath(row: categories.count - 1, section: 0)
                     self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                 }
@@ -91,37 +53,38 @@ class CategoryTableViewController: SwipeTableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    // MARK: - Table view data source
     
-    //MARK: - Model Manipulation Methods
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return categoryManager.categories?.count ?? 1
+    }
     
-    func save(category: Category) {
-        do {
-            try realm.write({
-                realm.add(category)
-            })
-        } catch {
-            print("Error adding category \(error)")
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+    
+        if let category = categoryManager.categories?[indexPath.row] {
+            let bgColor = UIColor(hex: category.color)
+            cell.textLabel?.text = category.name
+            cell.backgroundColor = bgColor
+            cell.textLabel?.textColor = bgColor.isDark ? .white : .black
         }
         
-        tableView.reloadData()
+        return cell
     }
     
-    func loadCategories() {
-        categories = realm.objects(Category.self)
-        
-        tableView.reloadData()
+    //MARK: - Table view delegate
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: K.goToItemsSegue, sender: self)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    //MARK: - Swipe table view methods
     
     override func updateModel(at indexPath: IndexPath) {
-        if let category = categories?[indexPath.row] {
-            do {
-                try realm.write {
-                    realm.delete(category.items)
-                    realm.delete(category)
-                }
-            } catch {
-                print("Error deleting category \(error)")
-            }
+        if let category = categoryManager.categories?[indexPath.row] {
+            categoryManager.delete(category)
         }
     }
     
@@ -129,9 +92,11 @@ class CategoryTableViewController: SwipeTableViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoListTableViewController
-        destinationVC.category = selectedCategory
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.itemManager.category = categoryManager.categories?[indexPath.row]
+        }
         
     }
     
 }
-
